@@ -57,8 +57,10 @@ exports.insert_user = function(req, res){
 
 
 exports.login_user = function(req, res){
-    var form = new formidable.IncomingForm();
-    form.parse(req,function(err,fields,files){
+    // var form = new formidable.IncomingForm();
+    // form.parse(req,function(err,fields,files){
+        var fields = req.body;
+        // console.log(fields);
        userModel.loginUser(fields, function(err, result){
             if(err){
                 res.send({status:false, message:'Login failed.', response:err});
@@ -74,7 +76,6 @@ exports.login_user = function(req, res){
                 res.send({status:true, message:'Login successful.', response:customResponse});
             }
        }) ;
-    });
 };
   
 //Updating User.
