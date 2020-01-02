@@ -38,12 +38,19 @@ User.loginUser = function(fields,result){
                 result(null, e);
             }else{
                 let hashedPassword = r[0].password;
+                console.log('password  =====> ' +  hashedPassword);
                 bcrypt.compare(fields.password, hashedPassword, function(err, res) {
                     if(res === true){
+                        console.log('trueeeee password  match hogya.');
                         result(null, r);
                     }else{
+                        console.log('falseee password match nhi hua.');
                         result(null, err);
                     }
+
+                    // const payload = {
+                        
+                    // }
                 });
             }
         }

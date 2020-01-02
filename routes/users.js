@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+const withAuth = require('../middleware');
 
 //Requires controller modules.
 var user_controller = require('../controller/user/userController');
@@ -26,7 +27,7 @@ router.get('/get_user_by_id/:id', user_controller.get_user_by_id);
 router.post('/login_user', user_controller.login_user);
 
 /* GET todo listing. */
-router.get('/todos', user_controller.list_all_todo);
+router.get('/todos', withAuth, user_controller.list_all_todo);
 
 /* Inserting Todo */
 router.post('/insert_todo', user_controller.insert_todo);

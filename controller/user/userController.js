@@ -2,6 +2,8 @@ var userModel = require('../../model/user/userModel');
 var formidable = require('formidable');
 var utils = require('../../utils');
 var bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const secret = 'mysecretsshhh';
 
 //Get All Users.
 exports.list_all_users = function(req, res) {
@@ -60,7 +62,7 @@ exports.login_user = function(req, res){
     // var form = new formidable.IncomingForm();
     // form.parse(req,function(err,fields,files){
         var fields = req.body;
-        // console.log(fields);
+        console.log(fields);
        userModel.loginUser(fields, function(err, result){
             if(err){
                 res.send({status:false, message:'Login failed.', response:err});
@@ -73,6 +75,13 @@ exports.login_user = function(req, res){
                     'email' : result[0].email,
 
                 };
+                let email = result[0].email;
+                // Issue token
+                const payload = { email };
+                const token = jwt.sign(payload, secret, {
+                    expiresIn: '1h'
+                });
+                res.cookie('token', token, { httpOnly: true });
                 res.send({status:true, message:'Login successful.', response:customResponse});
             }
        }) ;
