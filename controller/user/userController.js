@@ -69,18 +69,21 @@ exports.login_user = function(req, res){
             }else if(result == null){
                 res.send({status:false, message:'Login failed.', response:result});
             }else{
-                let customResponse = {
-                    'id' : result[0].id,
-                    'name' : result[0].name,
-                    'email' : result[0].email,
-
-                };
                 let email = result[0].email;
                 // Issue token
                 const payload = { email };
                 const token = jwt.sign(payload, secret, {
                     expiresIn: '1h'
                 });
+                console.log('token ====> ' + token);
+
+                let customResponse = {
+                    'id' : result[0].id,
+                    'name' : result[0].name,
+                    'email' : result[0].email,
+                    'token' : token
+                };
+                
                 res.cookie('token', token, { httpOnly: true });
                 res.send({status:true, message:'Login successful.', response:customResponse});
             }
