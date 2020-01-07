@@ -41,4 +41,8 @@ router.post('/update_todo/:id', user_controller.update_todo);
 /* Check Email address exists */
 router.get('/check_email/:email', user_controller.check_email);
 
+router.get('/checkToken', withAuth, function(req, res) {
+  res.sendStatus(200);
+});
+
 module.exports = router;
