@@ -1,9 +1,8 @@
 var userModel = require('../../model/user/userModel');
 var formidable = require('formidable');
+const jwt = require('jsonwebtoken');
 var utils = require('../../utils');
 var bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const secret = 'mysecretsshhh';
 
 //Get All Users.
 exports.list_all_users = function(req, res) {
@@ -59,35 +58,53 @@ exports.insert_user = function(req, res){
 
 
 exports.login_user = function(req, res){
+    var fields = req.body;
     // var form = new formidable.IncomingForm();
     // form.parse(req,function(err,fields,files){
-        var fields = req.body;
-        // console.log(fields);
-       userModel.loginUser(fields, function(err, result){
+    
+    // });
+    console.log('fields 1 ',fields);
+
+        userModel.loginUser(fields, function(err, result){
             if(err){
-                res.send({status:false, message:'Login failed.', response:err});
+                res.send({status:false, message:'Error Occurred while logging in.', response:err});
             }else if(result == null){
-                res.send({status:false, message:'Login failed.', response:result});
+                res.send({status:false, message:'User Not Exists.', response:result});
             }else{
                 let email = result[0].email;
-                // Issue token
-                const payload = { email };
-                const token = jwt.sign(payload, secret, {
-                    expiresIn: '1h'
-                });
-                // console.log('token ====> ' + token);
-
+    
                 let customResponse = {
                     'id' : result[0].id,
                     'name' : result[0].name,
                     'email' : result[0].email,
-                    'token' : token
                 };
-                
-                res.cookie('token', token, { httpOnly: true });
-                res.send({status:true, message:'Login successful.', response:customResponse});
+                var days = 86400 * 30;
+                var token = jwt.sign({ id: result[0].id, name:result[0].name }, 'reactTodoApp', {
+                  expiresIn: days
+                });
+                userModel.saveToken(
+                    { tokenKey: token, idUser: result[0].id },
+                    (err, rs) => {
+                      if (rs) {
+                        console.log("res", rs);
+                        res.send({
+                          status: 1,
+                          message: "Customer Successfully LoggedIn.",
+                          token: token,
+                          data: result
+                        });
+                      } else {
+                        res.send({
+                          status: 0,
+                          message: "Some Error Occured. Try to Login again",
+                          data: err
+                        });
+                      }
+                    }
+                  );
+                // res.send({status:true, message:'Login successful.', response:customResponse});
             }
-       }) ;
+        });
 };
   
 //Updating User.

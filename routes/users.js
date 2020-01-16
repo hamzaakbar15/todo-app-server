@@ -1,48 +1,44 @@
-var express = require('express');
-var router = express.Router();
-const withAuth = require('../middleware');
+const express = require('express');
+const router = express.Router();
+const middleWare = require('../middleware/auth');
 
 //Requires controller modules.
-var user_controller = require('../controller/user/userController');
+const userController = require('../controller/user/userController');
 
 
 /* GET users listing. */
-router.get('/getusers', user_controller.list_all_users);
+router.get('/getusers', userController.list_all_users);
 // router.get('/', function(req, res, next) {
   // res.send('respond with a resource');
 // });
 
 /* Inserting user. */
-router.post('/insert_user', user_controller.insert_user);
+router.post('/insert_user', userController.insert_user);
 
 /* Updating user. */
-router.post('/update_user/:id', user_controller.update_user);
+router.post('/update_user/:id', userController.update_user);
 
 /* Deleting user. */ 
-router.get('/delete_user/:id', user_controller.delete_user);
+router.get('/delete_user/:id', userController.delete_user);
 
 /* Get user by ID */
-router.get('/get_user_by_id/:id', user_controller.get_user_by_id);
+router.get('/get_user_by_id/:id', userController.get_user_by_id);
 
-router.post('/login_user', user_controller.login_user);
+router.post('/login_user', userController.login_user);
 
 /* GET todo listing. */
-router.get('/todos', withAuth, user_controller.list_all_todo);
+router.get('/todos', middleWare.checkToken, userController.list_all_todo);
 
 /* Inserting Todo */
-router.post('/insert_todo', user_controller.insert_todo);
+router.post('/insert_todo', middleWare.checkToken, userController.insert_todo);
 
 /* Get todo by ID */
-router.get('/edit_todo/:id', user_controller.get_todo_by_id);
+router.get('/edit_todo/:id', userController.get_todo_by_id);
 
 /* Updating todo. */
-router.post('/update_todo/:id', user_controller.update_todo);
+router.post('/update_todo/:id', userController.update_todo);
 
 /* Check Email address exists */
-router.get('/check_email/:email', user_controller.check_email);
-
-router.get('/checkToken', withAuth, function(req, res) {
-  res.sendStatus(200);
-});
+router.get('/check_email/:email', userController.check_email);
 
 module.exports = router;

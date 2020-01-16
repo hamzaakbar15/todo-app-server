@@ -26,25 +26,20 @@ User.getAllUser = function (result) {
 };
 
 User.loginUser = function(fields,result){
-     console.log(JSON.stringify(fields));
-     // chalao
     c.query("Select * FROM user WHERE email = ?",[fields.email], function(e,r){
         if(e){
-            console.log('in iffff');
             result(e, null);
         }else{
             if(r == null){
-                console.log('email or password is incorrect');
                 result(null, e);
             }else{
+                console.log('fields',fields);
+                console.log('password',r);
                 let hashedPassword = r[0].password;
-                console.log('password  =====> ' +  hashedPassword);
                 bcrypt.compare(fields.password, hashedPassword, function(err, res) {
                     if(res === true){
-                        console.log('trueeeee password  match hogya.');
                         result(null, r);
                     }else{
-                        console.log('falseee password match nhi hua.');
                         result(null, err);
                     }
 
@@ -55,6 +50,30 @@ User.loginUser = function(fields,result){
             }
         }
     });
+};
+
+User.saveToken = (data, result) => {
+    c.query("INSERT INTO access_tokens SET ? ", data, (err, res) => {
+      if (err) {
+        result(err, null);
+      } else {
+        result(null, res);
+      }
+    });
+};
+
+User.verifyToken = (tokenData, result) => {
+    c.query(
+      "SELECT tokenKey, idUser FROM access_tokens WHERE idUser =  ? AND tokenKey = ?",
+      [tokenData.idUser, tokenData.token],
+      (err, res) => {
+        if (err) {
+          result(err, null);
+        } else {
+          result(null, res);
+        }
+      }
+    );
 };
 
 //Adding user.
