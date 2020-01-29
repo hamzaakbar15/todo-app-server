@@ -27,7 +27,8 @@ router.get('/get_user_by_id/:id', userController.get_user_by_id);
 router.post('/login_user', userController.login_user);
 
 /* GET todo listing. */
-router.get('/todos', middleWare.checkToken, userController.list_all_todo);
+// router.get('/todos', middleWare.checkToken, userController.list_all_todo);
+router.get('/todos', userController.list_all_todo);
 
 /* Inserting Todo */
 router.post('/insert_todo', middleWare.checkToken, userController.insert_todo);
